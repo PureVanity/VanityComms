@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vanity — Creator Portfolio</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #030201;
+    --bg-elevated: #11100f;
+    --bg-card: rgba(20,18,14,0.72);
+    --border: rgba(241,203,80,0.14);
+    --border-soft: rgba(241,203,80,0.08);
+    --text: #f8eed7;
+    --text-muted: #c7ab6f;
+    --text-faint: #8d7c57;
+    --accent: #d4b44a;
+    --accent-bright: #ffe38a;
+    --accent-dim: rgba(212,180,74,0.16);
+    --accent-glow: rgba(212,180,74,0.32);
+    --green: #d4b44a;
+    --glow-r: 212; --glow-g: 180; --glow-b: 74;
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior: auto; }
+    *{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  }
+
+  body{
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  a{ color: inherit; text-decoration: none; }
+  button{ font-family: inherit; cursor: pointer; }
+
+  /* ---------- ambient background ---------- */
+  .bg-glow{
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(600px 500px at 18% -5%, rgba(212,180,74,0.18), transparent 60%),
+      radial-gradient(700px 600px at 85% 15%, rgba(212,180,74,0.10), transparent 60%);
+  }
+  .noise{
+    position: fixed; inset: 0; z-index: 0; opacity: 0.035; pointer-events:none; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .wrap{ position: relative; z-index: 1; max-width: 1180px; margin: 0 auto; padding: 0 28px; }
+
+  /* ---------- nav ---------- */
+  nav{
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(6,7,13,0.72);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .nav-inner{
+    max-width: 1180px; margin: 0 auto; padding: 0 28px;
+    height: 68px; display:flex; align-items:center; justify-content: space-between;
+  }
+  .brand{ display:flex; align-items:center; gap: 10px; font-weight: 700; font-size: 16px; letter-spacing: 0.2px; }
+  .brand svg{ display:block; }
+  .nav-links{ display:flex; gap: 34px; align-items:center; }
+  .nav-links a{
+    font-size: 14px; color: var(--text-muted); font-weight: 500; transition: color .2s ease;
+  }
+  .nav-links a:hover{ color: var(--text); }
+  .nav-cta{
+    display:flex; align-items:center; gap:12px;
+  }
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    padding: 10px 18px; border-radius: 10px; font-size: 14px; font-weight: 600;
+    border: 1px solid transparent; transition: transform .18s ease, box-shadow .18s ease, background .2s ease, border-color .2s ease;
+    white-space: nowrap;
+  }
+  .btn:active{ transform: scale(0.97); }
+  .btn-primary{
+    background: linear-gradient(135deg, var(--accent), #b38b2a);
+    color: #11100f;
+    box-shadow: 0 6px 24px -8px rgba(212,180,74,0.55);
+  }
+  .btn-primary:hover{ box-shadow: 0 8px 30px -8px rgba(212,180,74,0.75); transform: translateY(-1px); }
+  .btn-ghost{
+    background: rgba(212,180,74,0.06);
+    border-color: var(--border);
+    color: var(--text);
+  }
+  .btn-ghost:hover{ background: rgba(212,180,74,0.12); border-color: rgba(212,180,74,0.24); }
+  .btn-sm{ padding: 8px 14px; font-size: 13px; }
+  .nav-mobile-btn{ display:none; }
+
+  /* ---------- hero ---------- */
+  header.hero{
+    position: relative;
+    padding: 108px 0 80px;
+    text-align: center;
+  }
+  .pill{
+    display:inline-flex; align-items:center; gap: 9px;
+    padding: 8px 16px 8px 12px; border-radius: 999px;
+    border: 1px solid rgba(212,180,74,0.35);
+    background: rgba(212,180,74,0.08);
+    font-size: 13px; font-weight: 500; color: #fff3c4;
+    margin-bottom: 30px;
+    opacity: 0; transform: translateY(10px);
+    animation: rise .7s ease forwards;
+  }
+  .pill .dot{
+    width: 7px; height: 7px; border-radius: 50%; background: var(--green);
+    box-shadow: 0 0 0 0 rgba(62,207,106,0.6);
+    animation: pulse 2.2s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%{ box-shadow: 0 0 0 0 rgba(62,207,106,0.55); }
+    70%{ box-shadow: 0 0 0 7px rgba(62,207,106,0); }
+    100%{ box-shadow: 0 0 0 0 rgba(62,207,106,0); }
+  }
+
+  h1.headline{
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: clamp(40px, 7vw, 74px);
+    line-height: 1.06;
+    letter-spacing: -0.5px;
+    margin: 0 auto 26px;
+    max-width: 880px;
+    opacity: 0; transform: translateY(14px);
+    animation: rise .8s ease forwards .08s;
+  }
+  h1.headline em{
+    font-style: italic;
+    font-weight: 500;
+    background: linear-gradient(120deg, var(--accent-bright), #fff2a8 60%, var(--accent-bright));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .subtext{
+    max-width: 560px; margin: 0 auto 38px;
+    color: var(--text-muted); font-size: 17px; line-height: 1.6;
+    opacity: 0; transform: translateY(14px);
+    animation: rise .8s ease forwards .16s;
+  }
+  .hero-ctas{
+    display:flex; gap: 14px; justify-content:center; flex-wrap: wrap; margin-bottom: 46px;
+    opacity: 0; transform: translateY(14px);
+    animation: rise .8s ease forwards .24s;
+  }
+  .checklist{
+    display:flex; gap: 30px; justify-content:center; flex-wrap: wrap;
+    font-size: 13.5px; color: var(--text-muted);
+    opacity: 0; transform: translateY(14px);
+    animation: rise .8s ease forwards .32s;
+  }
+  .checklist span{ display:inline-flex; align-items:center; gap: 7px; }
+  .checklist svg{ flex-shrink:0; }
+
+  @keyframes rise{ to{ opacity: 1; transform: translateY(0); } }
+
+  /* feature strip */
+  .strip{
+    border-top: 1px solid var(--border-soft);
+    border-bottom: 1px solid var(--border-soft);
+    padding: 22px 0;
+  }
+  .strip-inner{
+    display:flex; justify-content:center; flex-wrap:wrap; gap: 40px;
+    font-size: 13.5px; color: var(--text-faint); font-weight: 500;
+  }
+  .strip-inner span{ display:flex; align-items:center; gap: 8px; }
+
+  /* ---------- section shell ---------- */
+  section{ padding: 100px 0; position: relative; }
+  .eyebrow{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--accent-bright); font-weight: 500;
+    margin-bottom: 14px; display:block;
+  }
+  .section-head{ max-width: 620px; margin-bottom: 54px; }
+  .section-head h2{
+    font-family: 'Fraunces', serif; font-weight: 500;
+    font-size: clamp(28px, 4vw, 38px); margin: 0 0 14px; letter-spacing: -0.3px;
+  }
+  .section-head p{ color: var(--text-muted); font-size: 15.5px; line-height: 1.65; margin: 0; }
+
+  .reveal{ opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
+  .reveal.in{ opacity: 1; transform: translateY(0); }
+
+  /* ---------- gallery ---------- */
+  .gallery{
+    display:grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+  }
+  .card-project{
+    position: relative; border-radius: var(--radius); overflow:hidden;
+    border: 1px solid var(--border); aspect-ratio: 16/9;
+    background: var(--bg-elevated);
+    transition: transform .35s cubic-bezier(.2,.7,.2,1), border-color .3s ease;
+    cursor: pointer;
+  }
+  .card-project:hover{ transform: translateY(-6px); border-color: rgba(212,180,74,0.45); }
+  .card-project img{
+    width: 100%; height: 100%; object-fit: cover; display:block;
+    transform: scale(1.02);
+    transition: transform .5s ease;
+  }
+  .card-project:hover img{ transform: scale(1.08); }
+  .card-project .overlay{
+    position:absolute; inset:0;
+    background: linear-gradient(to top, rgba(4,5,10,0.92) 0%, rgba(4,5,10,0.15) 55%, transparent 75%);
+    display:flex; align-items:flex-end; padding: 16px;
+  }
+  .card-project .overlay h3{
+    font-size: 15px; font-weight: 600; margin: 0;
+  }
+  .card-project .overlay p{
+    font-size: 12.5px; color: var(--text-muted); margin: 3px 0 0;
+  }
+
+  @media (max-width: 900px){ .gallery{ grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 620px){ .gallery{ grid-template-columns: 1fr; } }
+
+  /* lightbox */
+  .lightbox{
+    position: fixed; inset:0; z-index: 100; display:none;
+    background: rgba(4,5,10,0.88); backdrop-filter: blur(6px);
+    align-items:center; justify-content:center; padding: 40px;
+    opacity: 0; transition: opacity .25s ease;
+  }
+  .lightbox.open{ display:flex; opacity: 1; }
+  .lightbox img{
+    max-width: min(90vw, 1100px); max-height: 82vh; border-radius: 12px;
+    box-shadow: 0 30px 80px -20px rgba(0,0,0,0.6);
+  }
+  .lightbox-caption{ text-align:center; margin-top: 16px; color: var(--text-muted); font-size: 14px; }
+  .lightbox-close{
+    position:absolute; top: 26px; right: 32px; width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+    display:flex; align-items:center; justify-content:center; color: var(--text);
+    transition: background .2s ease;
+  }
+  .lightbox-close:hover{ background: rgba(255,255,255,0.12); }
+
+  /* ---------- music section ---------- */
+  .music-shell{
+    position: relative; border-radius: 24px; overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    padding: 44px;
+  }
+  .music-glow{
+    position:absolute; inset: -40%;
+    background: radial-gradient(circle at 30% 30%, rgba(var(--glow-r),var(--glow-g),var(--glow-b), 0.35), transparent 60%);
+    filter: blur(50px);
+    transition: background 1s ease;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .music-inner{ position: relative; z-index: 1; display:flex; align-items:center; gap: 32px; flex-wrap: wrap; }
+  .album-art{
+    width: 156px; height: 156px; border-radius: 14px; flex-shrink:0;
+    background: #171a2c center/cover no-repeat;
+    box-shadow: 0 20px 50px -14px rgba(0,0,0,0.6);
+    position: relative;
+    overflow: hidden;
+  }
+  .album-art .placeholder-icon{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color: var(--text-faint);
+  }
+  .music-info{ flex: 1; min-width: 220px; }
+  .music-status{
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--text-faint); display:flex; align-items:center; gap:10px; margin-bottom: 10px;
+  }
+  .eq{ display:flex; align-items:flex-end; gap: 3px; height: 14px; }
+  .eq span{
+    width: 3px; background: var(--green); border-radius: 2px;
+    animation: eq 1s ease-in-out infinite;
+  }
+  .eq span:nth-child(1){ animation-delay: 0s; height: 60%; }
+  .eq span:nth-child(2){ animation-delay: 0.2s; height: 100%; }
+  .eq span:nth-child(3){ animation-delay: 0.4s; height: 40%; }
+  @keyframes eq{ 0%,100%{ transform: scaleY(0.4); } 50%{ transform: scaleY(1); } }
+  .music-info h3{ margin: 0 0 4px; font-size: 21px; font-weight: 700; }
+  .music-info .artist{ color: var(--text-muted); font-size: 14.5px; margin: 0 0 18px; }
+  .progress-track{
+    width: 100%; height: 4px; border-radius: 4px; background: rgba(255,255,255,0.08); overflow:hidden;
+  }
+  .progress-fill{
+    height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-bright));
+    width: 0%; transition: width .3s linear;
+  }
+  .progress-times{ display:flex; justify-content:space-between; font-size: 11.5px; color: var(--text-faint); margin-top: 6px; font-family: 'JetBrains Mono', monospace; }
+  .music-connect{ display:flex; flex-direction:column; align-items:flex-start; gap: 14px; }
+  .music-connect p{ color: var(--text-muted); font-size: 14.5px; max-width: 320px; line-height: 1.6; margin:0; }
+
+  /* ---------- socials + donate ---------- */
+  .two-col{ display:grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 760px){ .two-col{ grid-template-columns: 1fr; } }
+
+  .panel{
+    border: 1px solid var(--border); border-radius: var(--radius);
+    background: var(--bg-elevated);
+    padding: 30px;
+    display:flex; align-items:center; gap: 18px;
+    transition: transform .3s ease, border-color .3s ease;
+  }
+  .panel:hover{ transform: translateY(-4px); border-color: rgba(212,180,74,0.35); }
+  .panel .icon-box{
+    width: 52px; height: 52px; border-radius: 12px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    background: var(--accent-dim); color: var(--accent-bright);
+  }
+  .panel .icon-box.kofi{ background: rgba(212,180,74,0.15); color: #ffe38a; }
+  .panel h3{ margin: 0 0 4px; font-size: 16.5px; }
+  .panel p{ margin: 0 0 14px; color: var(--text-muted); font-size: 13.5px; }
+
+  /* ---------- footer ---------- */
+  footer{
+    border-top: 1px solid var(--border-soft);
+    padding: 40px 0;
+  }
+  .footer-inner{
+    display:flex; justify-content:space-between; align-items:center; flex-wrap: wrap; gap: 20px;
+  }
+  .footer-brand{ display:flex; align-items:center; gap: 10px; font-weight: 700; }
+  .footer-links{ display:flex; gap: 22px; }
+  .footer-links a{ color: var(--text-muted); font-size: 13.5px; transition: color .2s ease; }
+  .footer-links a:hover{ color: var(--text); }
+  .footer-copy{ color: var(--text-faint); font-size: 12.5px; }
+
+  @media (max-width: 720px){
+    .nav-links{ display:none; }
+    .hero-ctas .btn span.long{ display:none; }
+    section{ padding: 70px 0; }
+    .music-inner{ flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+<div class="noise"></div>
+
+<nav>
+  <div class="nav-inner">
+    <div class="brand">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 8L7 5L12 9L17 5L21 8L19 19H5L3 8Z" fill="url(#g1)"/><defs><linearGradient id="g1" x1="3" y1="5" x2="21" y2="19"><stop stop-color="#ffe89c"/><stop offset="1" stop-color="#c99b2d"/></linearGradient></defs></svg>
+      Vanity
+    </div>
+    <div class="nav-links">
+      <a href="#projects">Projects</a>
+      <a href="#music">Music</a>
+      <a href="#socials">Socials</a>
+      <a href="#support">Support</a>
+    </div>
+    <div class="nav-cta">
+      <a class="btn btn-primary btn-sm" id="navVideoLink" href="#" target="_blank" rel="noopener">Watch</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <a class="pill" id="uploadPill" href="#" target="_blank" rel="noopener">
+      <span class="dot"></span>
+      <span id="uploadPillText">Checking the next upload…</span>
+    </a>
+    <h1 class="headline">The Best Thumbnail Maker.<br><em>In Existance.</em></h1>
+    <p class="subtext">SMP Videos, and the render work behind every thumbnail — posted across YouTube and TikTok.</p>
+    <div class="hero-ctas">
+      <a class="btn btn-primary" id="heroVideoLink" href="#" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23 12s0-3.6-.46-5.3a3 3 0 0 0-2.1-2.1C18.7 4 12 4 12 4s-6.7 0-8.44.6a3 3 0 0 0-2.1 2.1C1 8.4 1 12 1 12s0 3.6.46 5.3a3 3 0 0 0 2.1 2.1C5.3 20 12 20 12 20s6.7 0 8.44-.6a3 3 0 0 0 2.1-2.1C23 15.6 23 12 23 12z"/><path d="M9.75 15.5V8.5L15.5 12l-5.75 3.5z" fill="#06070d"/></svg>
+        <span class="long">Watch on</span> YouTube ↗
+      </a>
+      <a class="btn btn-ghost" href="https://www.tiktok.com/@purevanlty" target="_blank" rel="noopener">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.82s.51.5 0 0A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 1 1-2.6-2.59c.28 0 .55.05.79.13V9.83a5.9 5.9 0 0 0-.79-.05A5.94 5.94 0 1 0 15.55 15.8V9.24a7.2 7.2 0 0 0 4.22 1.35v-3.1a4.28 4.28 0 0 1-3.17-1.67z"/></svg>
+        Follow on TikTok
+      </a>
+    </div>
+    <div class="checklist">
+      <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3ecf6a" stroke-width="2.4"><path d="M20 6L9 17l-5-5"/></svg>Amazing upload Schedule </span>
+      <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3ecf6a" stroke-width="2.4"><path d="M20 6L9 17l-5-5"/></svg>PvP practice & montages</span>
+      <span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3ecf6a" stroke-width="2.4"><path d="M20 6L9 17l-5-5"/></svg>Custom render thumbnails</span>
+    </div>
+  </div>
+</header>
+
+<div class="strip">
+  <div class="wrap strip-inner">
+    <span>🎬 Minecraft SMP Content maker</span>
+    <span>🎨 Original thumbnail & render art</span>
+    <span>☕ Supported directly by viewers</span>
+  </div>
+</div>
+
+<section id="projects">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Projects</span>
+      <h2>Renders &amp; thumbnails</h2>
+      <p>A look at the artwork behind the videos — click any piece to view it full size.</p>
+    </div>
+    <div class="gallery">
+      <div class="card-project reveal" data-full="assets/1_heart_with_random_effects.png" data-title="Effect Overlay Render" data-desc="Full status-effect HUD study">
+        <img src="assets/1_heart_with_random_effects.png" alt="Effect Overlay Render" loading="lazy">
+        <div class="overlay"><div><h3>Effect Overlay Render</h3><p>HUD / status effect study</p></div></div>
+      </div>
+      <div class="card-project reveal" data-full="assets/Another_Practice.png" data-title="Betraying Teamate" data-desc="Future Video Render">
+        <img src="assets/Another_Practice.png" alt="Betraying Teamate" loading="lazy">
+        <div class="overlay"><div><h3>Betraying Teamate</h3><p>Future Video Render</p></div></div>
+      </div>
+      <div class="card-project reveal" data-full="assets/App_Thumbnail.png" data-title="Loot Unboxing" data-desc="Weapon showcase thumbnail">
+        <img src="assets/App_Thumbnail.png" alt="Loot Unboxing" loading="lazy">
+        <div class="overlay"><div><h3>Loot Unboxing</h3><p>Weapon showcase thumbnail</p></div></div>
+      </div>
+      <div class="card-project reveal" data-full="assets/Practice_B.png" data-title="Spear King" data-desc="Weapon spotlight render">
+        <img src="assets/Practice_B.png" alt="Spear King" loading="lazy">
+        <div class="overlay"><div><h3>Spear King</h3><p>Weapon spotlight render</p></div></div>
+      </div>
+      <div class="card-project reveal" data-full="assets/Practice22.png" data-title="Mystery Duelist" data-desc="Reveal-style thumbnail">
+        <img src="assets/Practice22.png" alt="Mystery Duelist" loading="lazy">
+        <div class="overlay"><div><h3>Mystery Duelist</h3><p>Reveal-style thumbnail</p></div></div>
+      </div>
+      <div class="card-project reveal" data-full="assets/Thumbnail_Practice__1.png" data-title="Cave Ambush" data-desc="In-game moment render">
+        <img src="assets/Thumbnail_Practice__1.png" alt="Cave Ambush" loading="lazy">
+        <div class="overlay"><div><h3>Hidden Trap</h3><p>In-game moment render</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="music">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Now playing</span>
+      <h2>What I'm listening to</h2>
+      <p>Live from my Spotify — Shows Whatever I am listening to.</p>
+    </div>
+
+    <div class="music-shell reveal">
+      <div class="music-glow" id="musicGlow"></div>
+      <div class="music-inner" id="musicInner">
+        <!-- Disconnected state (default) -->
+        <div class="album-art" id="albumArt">
+          <div class="placeholder-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3.2"/></svg>
+          </div>
+        </div>
+        <div class="music-info">
+          <div class="music-status" id="musicStatus">Not connected</div>
+          <h3 id="trackName">Connect your Spotify</h3>
+          <p class="artist" id="trackArtist">See what's playing in real time, right here.</p>
+          <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+          <div class="progress-times"><span id="timeElapsed">0:00</span><span id="timeTotal">0:00</span></div>
+        </div>
+        <div class="music-connect" id="musicConnect">
+          <button class="btn btn-primary" id="connectBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.52 17.34c-.24.36-.66.48-1.02.24-2.82-1.68-6.3-2.04-10.44-1.14-.42.12-.78-.18-.9-.54-.12-.42.18-.78.54-.9 4.5-1.02 8.4-.6 11.52 1.32.42.18.48.66.3 1.02zm1.44-3.3c-.3.42-.84.6-1.26.3-3.24-1.98-8.16-2.58-11.94-1.38-.48.12-1.02-.12-1.14-.6-.12-.48.12-1.02.6-1.14 4.38-1.32 9.78-.66 13.5 1.56.36.18.54.78.24 1.26zm.12-3.42C15.24 8.4 8.88 8.16 5.22 9.3c-.6.18-1.2-.18-1.38-.72-.18-.6.18-1.2.72-1.38 4.26-1.32 11.28-1.02 15.72 1.62.54.3.72 1.02.42 1.56-.3.48-1.02.66-1.56.36z"/></svg>
+            Connect Spotify
+          </button>
+          <p>Uses Spotify's secure PKCE login — your account credentials never touch this site.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="socials">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Socials</span>
+      <h2>Where to find me</h2>
+      <p>New clips, Videos, and renders go up here first.</p>
+    </div>
+    <div class="two-col">
+      <div class="panel reveal">
+        <div class="icon-box">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M23 12s0-3.6-.46-5.3a3 3 0 0 0-2.1-2.1C18.7 4 12 4 12 4s-6.7 0-8.44.6a3 3 0 0 0-2.1 2.1C1 8.4 1 12 1 12s0 3.6.46 5.3a3 3 0 0 0 2.1 2.1C5.3 20 12 20 12 20s6.7 0 8.44-.6a3 3 0 0 0 2.1-2.1C23 15.6 23 12 23 12z"/><path d="M9.75 15.5V8.5L15.5 12l-5.75 3.5z" fill="#10142a"/></svg>
+        </div>
+        <div>
+          <h3>YouTube</h3>
+          <p>@FaIseVanity — Videos &amp; practice</p>
+          <a class="btn btn-ghost btn-sm" href="https://www.youtube.com/@FaIseVanity" target="_blank" rel="noopener">Visit channel ↗</a>
+        </div>
+      </div>
+      <div class="panel reveal">
+        <div class="icon-box">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.82s.51.5 0 0A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 1 1-2.6-2.59c.28 0 .55.05.79.13V9.83a5.9 5.9 0 0 0-.79-.05A5.94 5.94 0 1 0 15.55 15.8V9.24a7.2 7.2 0 0 0 4.22 1.35v-3.1a4.28 4.28 0 0 1-3.17-1.67z"/></svg>
+        </div>
+        <div>
+          <h3>TikTok</h3>
+          <p>@purevanlty — quick clips &amp; highlights</p>
+          <a class="btn btn-ghost btn-sm" href="https://www.tiktok.com/@purevanlty" target="_blank" rel="noopener">Visit profile ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="support">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Support</span>
+      <h2>Buy me a coffee</h2>
+      <p>If you enjoy the content, this is the easiest way to back what comes next.</p>
+    </div>
+    <div class="panel reveal" style="max-width: 560px;">
+      <div class="icon-box kofi">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M2 3h15a4 4 0 0 1 4 4v1a4 4 0 0 1-4 4h-1.17A6 6 0 0 1 10 19H7a5 5 0 0 1-5-5V3zm15 7a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1v5h1z"/></svg>
+      </div>
+      <div>
+        <h3>Ko-fi</h3>
+        <p>Every cup helps fund new gear, edits, and uploads.</p>
+        <a class="btn btn-primary btn-sm" href="https://ko-fi.com/falsevanity" target="_blank" rel="noopener">Support on Ko-fi ↗</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-inner">
+    <div class="footer-brand">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 8L7 5L12 9L17 5L21 8L19 19H5L3 8Z" fill="url(#g2)"/><defs><linearGradient id="g2" x1="3" y1="5" x2="21" y2="19"><stop stop-color="#ffe89c"/><stop offset="1" stop-color="#c99b2d"/></linearGradient></defs></svg>
+      Vanity
+    </div>
+    <div class="footer-links">
+      <a href="https://www.youtube.com/@FaIseVanity" target="_blank" rel="noopener">YouTube</a>
+      <a href="https://www.tiktok.com/@purevanlty" target="_blank" rel="noopener">TikTok</a>
+      <a href="https://ko-fi.com/falsevanity" target="_blank" rel="noopener">Ko-fi</a>
+    </div>
+    <div class="footer-copy">© 2026 Vanity. All renders are original work.</div>
+  </div>
+</footer>
+
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-close" id="lightboxClose">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </div>
+  <div>
+    <img id="lightboxImg" src="" alt="">
+    <div class="lightbox-caption" id="lightboxCaption"></div>
+  </div>
+</div>
+
+<script>
+const uploadPill = document.getElementById('uploadPill');
+const uploadPillText = document.getElementById('uploadPillText');
+const navVideoLink = document.getElementById('navVideoLink');
+const heroVideoLink = document.getElementById('heroVideoLink');
+const DEFAULT_VIDEO_URL = 'https://www.youtube.com/@FaIseVanity';
+
+function setVideoLinks(url){
+  const nextUrl = url || DEFAULT_VIDEO_URL;
+  if(uploadPill) uploadPill.href = nextUrl;
+  if(navVideoLink) navVideoLink.href = nextUrl;
+  if(heroVideoLink) heroVideoLink.href = nextUrl;
+}
+
+function formatCountdown(diffMs){
+  const totalMinutes = Math.max(1, Math.floor(diffMs / 60000));
+  const days = Math.floor(totalMinutes / 1440);
+  const hours = Math.floor((totalMinutes % 1440) / 60);
+  const minutes = totalMinutes % 60;
+
+  if(days > 0){
+    return `Next upload in ${days}d ${hours}h`;
+  }
+  if(hours > 0){
+    return `Next upload in ${hours}h ${minutes}m`;
+  }
+  return `Next upload in ${minutes}m`;
+}
+
+async function refreshUploadInfo(){
+  try{
+    const res = await fetch('/api/latest-video?ts=' + Date.now());
+    if(!res.ok) throw new Error('upload feed unavailable');
+    const data = await res.json();
+    const videoUrl = data.videoUrl || DEFAULT_VIDEO_URL;
+    setVideoLinks(videoUrl);
+
+    let message = 'New upload — watch it now';
+    if(data.publishedAt){
+      const publishedAt = new Date(data.publishedAt);
+      const ageMs = Date.now() - publishedAt.getTime();
+      const twoWeeksMs = 14 * 24 * 60 * 60 * 1000;
+      if(ageMs > twoWeeksMs){
+        message = 'Waiting for upload — check back soon';
+      }
+    }
+
+    if(data.nextUploadAt){
+      const diffMs = new Date(data.nextUploadAt) - Date.now();
+      if(diffMs > 0){
+        message = 'Coming soon';
+      } else if(message === 'New upload — watch it now'){
+        message = 'New upload is live — watch it now';
+      }
+    }
+
+    if(uploadPillText){
+      uploadPillText.textContent = message;
+    }
+  }catch(err){
+    setVideoLinks(DEFAULT_VIDEO_URL);
+    if(uploadPillText){
+      uploadPillText.textContent = 'New upload — watch it now';
+    }
+  }
+}
+
+refreshUploadInfo();
+setInterval(refreshUploadInfo, 600000);
+
+/* ---------------- scroll reveal ---------------- */
+const revealEls = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+  });
+}, { threshold: 0.12 });
+revealEls.forEach(el=>io.observe(el));
+
+/* ---------------- lightbox ---------------- */
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+const lightboxCaption = document.getElementById('lightboxCaption');
+document.querySelectorAll('.card-project').forEach(card=>{
+  card.addEventListener('click', ()=>{
+    lightboxImg.src = card.dataset.full;
+    lightboxCaption.textContent = card.dataset.title + ' — ' + card.dataset.desc;
+    lightbox.classList.add('open');
+  });
+});
+document.getElementById('lightboxClose').addEventListener('click', ()=> lightbox.classList.remove('open'));
+lightbox.addEventListener('click', (e)=>{ if(e.target === lightbox) lightbox.classList.remove('open'); });
+document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') lightbox.classList.remove('open'); });
+
+/* ================================================================
+   SPOTIFY "NOW PLAYING" — Authorization Code + PKCE (no secret used)
+   ================================================================ */
+const SPOTIFY_CLIENT_ID = '58b1eab440244f18a9d037f9df2410ad';
+// This MUST exactly match a Redirect URI registered on your Spotify app
+// (Spotify Developer Dashboard -> your app -> Settings -> Redirect URIs).
+// It only works when this page is actually being served from that exact
+// origin + path. For local testing that means running a static server
+// bound to 127.0.0.1:25566 with this file served at /callback (or update
+// this constant + your app's redirect URI to match wherever you host it).
+const SPOTIFY_REDIRECT_URI = 'http://127.0.0.1:25566/callback';
+const SPOTIFY_SCOPES = 'user-read-currently-playing user-read-playback-state';
+
+// NOTE: your Client Secret is intentionally never used anywhere in this
+// file. PKCE is designed for apps like this (public, browser-only) so the
+// secret isn't needed for login or refresh. Keep it private regardless.
+
+const els = {
+  connectBtn: document.getElementById('connectBtn'),
+  musicConnect: document.getElementById('musicConnect'),
+  musicStatus: document.getElementById('musicStatus'),
+  trackName: document.getElementById('trackName'),
+  trackArtist: document.getElementById('trackArtist'),
+  albumArt: document.getElementById('albumArt'),
+  progressFill: document.getElementById('progressFill'),
+  timeElapsed: document.getElementById('timeElapsed'),
+  timeTotal: document.getElementById('timeTotal'),
+  musicGlow: document.getElementById('musicGlow'),
+};
+
+function b64url(bytes){
+  return btoa(String.fromCharCode(...new Uint8Array(bytes)))
+    .replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+}
+async function sha256(str){
+  const data = new TextEncoder().encode(str);
+  return await crypto.subtle.digest('SHA-256', data);
+}
+function randomString(len=64){
+  const arr = new Uint8Array(len);
+  crypto.getRandomValues(arr);
+  return Array.from(arr, b => ('0'+(b%36).toString(36)).slice(-1)).join('');
+}
+
+async function startSpotifyLogin(){
+  const verifier = randomString(64);
+  localStorage.setItem('sp_verifier', verifier);
+  const challenge = b64url(await sha256(verifier));
+  const params = new URLSearchParams({
+    client_id: SPOTIFY_CLIENT_ID,
+    response_type: 'code',
+    redirect_uri: SPOTIFY_REDIRECT_URI,
+    scope: SPOTIFY_SCOPES,
+    code_challenge_method: 'S256',
+    code_challenge: challenge,
+  });
+  window.location.href = 'https://accounts.spotify.com/authorize?' + params.toString();
+}
+
+async function exchangeCodeForToken(code){
+  const verifier = localStorage.getItem('sp_verifier');
+  const body = new URLSearchParams({
+    client_id: SPOTIFY_CLIENT_ID,
+    grant_type: 'authorization_code',
+    code,
+    redirect_uri: SPOTIFY_REDIRECT_URI,
+    code_verifier: verifier,
+  });
+  const res = await fetch('https://accounts.spotify.com/api/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body,
+  });
+  if(!res.ok) throw new Error('token exchange failed');
+  const data = await res.json();
+  saveTokens(data);
+}
+
+async function refreshAccessToken(){
+  const refresh_token = localStorage.getItem('sp_refresh_token');
+  if(!refresh_token) return null;
+  const body = new URLSearchParams({
+    client_id: SPOTIFY_CLIENT_ID,
+    grant_type: 'refresh_token',
+    refresh_token,
+  });
+  const res = await fetch('https://accounts.spotify.com/api/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body,
+  });
+  if(!res.ok) return null;
+  const data = await res.json();
+  saveTokens(data);
+  return data.access_token;
+}
+
+function saveTokens(data){
+  localStorage.setItem('sp_access_token', data.access_token);
+  localStorage.setItem('sp_token_expires', Date.now() + (data.expires_in * 1000));
+  if(data.refresh_token) localStorage.setItem('sp_refresh_token', data.refresh_token);
+}
+
+async function getValidToken(){
+  const expires = Number(localStorage.getItem('sp_token_expires') || 0);
+  let token = localStorage.getItem('sp_access_token');
+  if(!token) return null;
+  if(Date.now() > expires - 10000){
+    token = await refreshAccessToken();
+  }
+  return token;
+}
+
+function fmtTime(ms){
+  const s = Math.floor(ms/1000);
+  return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0');
+}
+
+// sample average color of the album art to drive the ambient glow
+function updateGlowFromImage(img){
+  try{
+    const canvas = document.createElement('canvas');
+    canvas.width = 16; canvas.height = 16;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, 16, 16);
+    const { data } = ctx.getImageData(0, 0, 16, 16);
+    let r=0,g=0,b=0,n=0;
+    for(let i=0;i<data.length;i+=4){ r+=data[i]; g+=data[i+1]; b+=data[i+2]; n++; }
+    r=Math.round(r/n); g=Math.round(g/n); b=Math.round(b/n);
+    document.documentElement.style.setProperty('--glow-r', r);
+    document.documentElement.style.setProperty('--glow-g', g);
+    document.documentElement.style.setProperty('--glow-b', b);
+  }catch(e){ /* CORS-tainted canvas: silently keep default glow */ }
+}
+
+let pollTimer = null;
+async function pollNowPlaying(){
+  const token = await getValidToken();
+  if(!token){ setDisconnectedUI(); return; }
+
+  try{
+    const res = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
+      headers: { Authorization: 'Bearer ' + token }
+    });
+
+    if(res.status === 204){ setIdleUI(); return; }
+    if(!res.ok){ setIdleUI(); return; }
+
+    const data = await res.json();
+    if(!data || !data.item){ setIdleUI(); return; }
+
+    const track = data.item;
+    const artUrl = track.album.images[0]?.url;
+    els.trackName.textContent = track.name;
+    els.trackArtist.textContent = track.artists.map(a=>a.name).join(', ');
+    els.timeElapsed.textContent = fmtTime(data.progress_ms || 0);
+    els.timeTotal.textContent = fmtTime(track.duration_ms || 0);
+    els.progressFill.style.width = ((data.progress_ms / track.duration_ms) * 100) + '%';
+
+    els.musicStatus.innerHTML = data.is_playing
+      ? '<span class="eq"><span></span><span></span><span></span></span> Playing now'
+      : 'Paused';
+
+    if(artUrl){
+      els.albumArt.style.backgroundImage = `url(${artUrl})`;
+      els.albumArt.innerHTML = '';
+      const probe = new Image();
+      probe.crossOrigin = 'anonymous';
+      probe.onload = () => updateGlowFromImage(probe);
+      probe.src = artUrl;
+    }
+  }catch(e){
+    setIdleUI();
+  }
+}
+
+function setIdleUI(){
+  els.musicStatus.textContent = 'Connected — nothing playing right now';
+  els.trackName.textContent = 'Taking a break';
+  els.trackArtist.textContent = 'Check back once something\'s playing.';
+  els.progressFill.style.width = '0%';
+  els.timeElapsed.textContent = '0:00';
+  els.timeTotal.textContent = '0:00';
+}
+
+function setDisconnectedUI(){
+  els.musicConnect.style.display = 'flex';
+  els.musicStatus.textContent = 'Not connected';
+  els.trackName.textContent = 'Connect your Spotify';
+  els.trackArtist.textContent = "See what's playing in real time, right here.";
+}
+
+function setConnectedUI(){
+  els.musicConnect.style.display = 'none';
+}
+
+els.connectBtn.addEventListener('click', startSpotifyLogin);
+
+(async function initSpotify(){
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get('code');
+
+  if(code){
+    try{
+      await exchangeCodeForToken(code);
+      window.history.replaceState({}, '', window.location.pathname);
+    }catch(e){ console.error(e); }
+  }
+
+  const token = await getValidToken();
+  if(token){
+    setConnectedUI();
+    pollNowPlaying();
+    pollTimer = setInterval(pollNowPlaying, 12000);
+  }
+})();
+</script>
+
+</body>
+</html>

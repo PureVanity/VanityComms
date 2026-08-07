@@ -1,0 +1,23 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run vanity server",
+      "type": "shell",
+      "command": "python",
+      "args": ["serve.py"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/vanity-site"
+      },
+      "problemMatcher": []
+    }
+  ]
+}
