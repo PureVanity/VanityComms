@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <rect width="640" height="360" fill="#0c141b"/>
+  <rect x="1" y="1" width="638" height="358" fill="none" stroke="#2f4a5c" stroke-width="2" stroke-dasharray="8 8"/>
+  <g fill="none" stroke="#4fa8dd" stroke-width="3">
+    <rect x="255" y="140" width="130" height="90" rx="6"/>
+    <circle cx="288" cy="168" r="10"/>
+    <path d="M255 210 L300 178 L330 200 L360 168 L385 195"/>
+  </g>
+  <text x="320" y="270" font-family="Arial, sans-serif" font-size="17" fill="#7fa6bd" text-anchor="middle">Replace this image</text>
+  <text x="320" y="294" font-family="Arial, sans-serif" font-size="13" fill="#4d6579" text-anchor="middle">assets/custom/placeholder.svg</text>
+</svg>
